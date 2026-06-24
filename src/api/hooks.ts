@@ -77,7 +77,7 @@ export function useScan(id: number | null) {
 export function useLaunchScan() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (vars: { platforms: string[]; region: string; keywords: string[]; objective: string; limit: number }) =>
+    mutationFn: async (vars: { platforms: string[]; region: string; keywords: string[]; targets?: string[]; objective: string; limit: number }) =>
       (await api.post<ScanJob>('/scans', vars)).data,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['scans'] });

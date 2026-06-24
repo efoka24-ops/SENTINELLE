@@ -56,6 +56,7 @@ class ScanIn(BaseModel):
     platforms: list[str]
     region: str = "National"
     keywords: list[str] = []
+    targets: list[str] = []  # cibles publiques (URLs/comptes) pour collecte réelle Apify
     objective: str = ""  # "" | child_safety | trafficking | ...
     limit: int = 40
 

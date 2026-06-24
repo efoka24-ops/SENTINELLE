@@ -21,7 +21,7 @@ def level_for(score: float) -> str:
     return "INFO"
 
 
-async def run_scan(scan_id: int, limit: int = 40) -> None:
+async def run_scan(scan_id: int, limit: int = 40, targets: list[str] | None = None) -> None:
     db = SessionLocal()
     job = db.get(ScanJob, scan_id)
     if job is None:
@@ -37,7 +37,7 @@ async def run_scan(scan_id: int, limit: int = 40) -> None:
             collector = REGISTRY.get(platform)
             if collector is None:
                 continue
-            items = await collector.collect(job.region, limit)
+            items = await collector.collect(job.region, limit, targets)
             keywords = job.keywords or []
             for raw in items:
                 res = classify(raw.text, keywords)

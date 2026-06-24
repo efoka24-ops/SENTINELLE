@@ -16,6 +16,7 @@ export function ScanLauncher({ onClose }: { onClose: () => void }) {
   const [region, setRegion] = useState('National');
   const [objective, setObjective] = useState('');
   const [keywords, setKeywords] = useState('');
+  const [targets, setTargets] = useState('');
   const [limit, setLimit] = useState(30);
   const [scanId, setScanId] = useState<number | null>(null);
   const [err, setErr] = useState('');
@@ -30,7 +31,8 @@ export function ScanLauncher({ onClose }: { onClose: () => void }) {
     setErr('');
     try {
       const kws = keywords.split(',').map((k) => k.trim()).filter(Boolean);
-      const res = await launch.mutateAsync({ platforms: selected, region, keywords: kws, objective, limit });
+      const tg = targets.split(/[\n,]/).map((t) => t.trim()).filter(Boolean);
+      const res = await launch.mutateAsync({ platforms: selected, region, keywords: kws, targets: tg, objective, limit });
       setScanId(res.id);
     } catch (e) {
       const ex = e as { response?: { data?: { detail?: string } } };
@@ -108,6 +110,21 @@ export function ScanLauncher({ onClose }: { onClose: () => void }) {
               style={{ width: '100%', padding: '10px 12px', borderRadius: 9, background: '#f7f8f6', border: `1px solid ${colors.border}`, color: colors.text, fontSize: 13, outline: 'none' }}
             />
             <div style={{ fontSize: 10.5, color: colors.muted3, marginTop: 5 }}>Séparez par des virgules. Les correspondances renforcent le score de criticité.</div>
+          </div>
+
+          {/* Cibles publiques à surveiller (collecte réelle Apify) */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', color: colors.muted2, fontWeight: 600, marginBottom: 8 }}>Cibles à surveiller · URLs / comptes publics</div>
+            <textarea
+              value={targets}
+              onChange={(e) => setTargets(e.target.value)}
+              placeholder={"https://www.facebook.com/cameroontribune\nhttps://x.com/infos_cmr\nhttps://www.tiktok.com/@compte\nhttps://www.youtube.com/@chaine"}
+              rows={3}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 9, background: '#f7f8f6', border: `1px solid ${colors.border}`, color: colors.text, fontSize: 12.5, outline: 'none', resize: 'vertical', fontFamily: 'inherit' }}
+            />
+            <div style={{ fontSize: 10.5, color: colors.muted3, marginTop: 5 }}>
+              Une cible par ligne. La collecte <strong style={{ color: colors.cyan }}>réelle</strong> (pages, groupes, comptes publics) est effectuée via Apify quand une cible correspond à une plateforme sélectionnée. Sans cible (ou sans clé API), le moteur reste en mode démonstration.
+            </div>
           </div>
 
           {/* Périmètre + volume */}

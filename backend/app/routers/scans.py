@@ -41,14 +41,17 @@ async def launch(body: ScanIn, db: Session = Depends(get_db),
     kws = [k.strip() for k in (body.keywords or []) if k.strip()]
     if body.objective and body.objective in OBJECTIVE_PRESETS:
         kws = list(dict.fromkeys(kws + OBJECTIVE_PRESETS[body.objective]))
+    targets = [t.strip() for t in (body.targets or []) if t.strip()]
     job = ScanJob(platforms=valid, keywords=kws, region=body.region or "National",
                   requested_by=user.name, status="pending")
     db.add(job)
     db.commit()
     db.refresh(job)
     detail = f"{', '.join(valid)} · {job.region}" + (f" · mots-clés: {', '.join(kws)}" if kws else "")
+    if targets:
+        detail += f" · cibles: {len(targets)}"
     log(db, "SCAN_LAUNCHED", detail, user)
-    asyncio.create_task(run_scan(job.id, max(5, min(body.limit, 100))))
+    asyncio.create_task(run_scan(job.id, max(5, min(body.limit, 100)), targets))
     return job
 
 

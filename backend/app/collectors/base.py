@@ -22,7 +22,9 @@ class Collector:
         """True si une clé/API réelle est configurée pour ce connecteur."""
         return False
 
-    async def collect(self, region: str, limit: int) -> list[RawItem]:  # pragma: no cover
+    async def collect(self, region: str, limit: int, targets: list[str] | None = None) -> list[RawItem]:  # pragma: no cover
+        """`targets` : cibles publiques (URLs/comptes) saisies pour CE scan.
+        Si absentes, le collecteur retombe sur les cibles globales (env)."""
         raise NotImplementedError
 
 

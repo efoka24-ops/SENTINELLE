@@ -38,6 +38,20 @@ def _handle(target: str) -> str:
     return target.rstrip("/").split("/")[-1].lstrip("@")
 
 
+def _match(platform: str, provided: list[str] | None) -> list[str]:
+    """Cibles pertinentes pour `platform`, parmi les cibles fournies pour CE
+    scan (prioritaires) ou, à défaut, les cibles globales (env WATCH_TARGETS).
+    Le rattachement se fait par le domaine/identifiant de plateforme dans l'URL."""
+    src = [t.strip() for t in (provided if provided else settings.WATCH_TARGETS) if t and t.strip()]
+    key = platform.lower().split(" /")[0].strip()  # "Twitter / X" -> "twitter"
+    out = []
+    for t in src:
+        low = t.lower()
+        if key in low or (platform == "Twitter / X" and ("x.com" in low or "twitter" in low)):
+            out.append(t)
+    return out
+
+
 async def _apify_collect(platform: str, targets: list[str], limit: int) -> list[RawItem]:
     """Collecte via Apify (pages / groupes / comptes publics) si configuré.
 
@@ -128,15 +142,16 @@ def _demo(platform: str, region: str, n: int) -> list[RawItem]:
 class TwitterCollector(Collector):
     platform = "Twitter / X"
 
-    def _apify_targets(self) -> list[str]:
-        return [t for t in settings.WATCH_TARGETS if "twitter" in t.lower() or "x.com" in t.lower()]
+    def _apify_targets(self, provided: list[str] | None = None) -> list[str]:
+        return _match("Twitter / X", provided)
 
     def is_live(self) -> bool:
-        return bool(settings.TWITTER_BEARER_TOKEN) or bool(settings.APIFY_TOKEN and self._apify_targets())
+        return bool(settings.TWITTER_BEARER_TOKEN) or bool(settings.APIFY_TOKEN)
 
-    async def collect(self, region: str, limit: int) -> list[RawItem]:
-        if settings.APIFY_TOKEN and self._apify_targets():
-            items = await _apify_collect("Twitter / X", self._apify_targets(), min(limit, 25))
+    async def collect(self, region: str, limit: int, targets: list[str] | None = None) -> list[RawItem]:
+        tg = self._apify_targets(targets)
+        if settings.APIFY_TOKEN and tg:
+            items = await _apify_collect("Twitter / X", tg, min(limit, 25))
             if items:
                 return items
         if not settings.TWITTER_BEARER_TOKEN:
@@ -167,15 +182,16 @@ class TwitterCollector(Collector):
 class YouTubeCollector(Collector):
     platform = "YouTube"
 
-    def _apify_targets(self) -> list[str]:
-        return [t for t in settings.WATCH_TARGETS if "youtube" in t.lower() or "youtu.be" in t.lower()]
+    def _apify_targets(self, provided: list[str] | None = None) -> list[str]:
+        return _match("YouTube", provided) + [t for t in (provided or settings.WATCH_TARGETS) if "youtu.be" in t.lower()]
 
     def is_live(self) -> bool:
-        return bool(settings.YOUTUBE_API_KEY) or bool(settings.APIFY_TOKEN and self._apify_targets())
+        return bool(settings.YOUTUBE_API_KEY) or bool(settings.APIFY_TOKEN)
 
-    async def collect(self, region: str, limit: int) -> list[RawItem]:
-        if settings.APIFY_TOKEN and self._apify_targets():
-            items = await _apify_collect("YouTube", self._apify_targets(), min(limit, 15))
+    async def collect(self, region: str, limit: int, targets: list[str] | None = None) -> list[RawItem]:
+        tg = self._apify_targets(targets)
+        if settings.APIFY_TOKEN and tg:
+            items = await _apify_collect("YouTube", tg, min(limit, 15))
             if items:
                 return items
         if not settings.YOUTUBE_API_KEY:
@@ -212,19 +228,16 @@ class _EnvGatedDemo(Collector):
     env_key = ""
     cap = 20
 
-    def _targets(self) -> list[str]:
-        key = self.platform.lower().split(" /")[0]
-        return [t for t in settings.WATCH_TARGETS if key in t.lower()]
+    def _targets(self, provided: list[str] | None = None) -> list[str]:
+        return _match(self.platform, provided)
 
     def is_live(self) -> bool:
-        if settings.APIFY_TOKEN and self._targets():
-            return True
-        return bool(getattr(settings, self.env_key, "")) if self.env_key else False
+        return bool(settings.APIFY_TOKEN) or bool(self.env_key and getattr(settings, self.env_key, ""))
 
-    async def collect(self, region: str, limit: int) -> list[RawItem]:
-        targets = self._targets()
-        if settings.APIFY_TOKEN and targets:
-            items = await _apify_collect(self.platform, targets, min(limit, self.cap))
+    async def collect(self, region: str, limit: int, targets: list[str] | None = None) -> list[RawItem]:
+        tg = self._targets(targets)
+        if settings.APIFY_TOKEN and tg:
+            items = await _apify_collect(self.platform, tg, min(limit, self.cap))
             if items:
                 return items
         return _demo(self.platform, region, min(limit, self.cap))
@@ -242,8 +255,8 @@ class FacebookCollector(Collector):
     def is_live(self) -> bool:
         return bool(settings.APIFY_TOKEN or settings.FACEBOOK_PAGE_IDS or settings.FACEBOOK_ACCESS_TOKEN)
 
-    async def collect(self, region: str, limit: int) -> list[RawItem]:
-        pages = settings.FACEBOOK_PAGE_IDS or [t for t in settings.WATCH_TARGETS if "facebook" in t.lower()]
+    async def collect(self, region: str, limit: int, targets: list[str] | None = None) -> list[RawItem]:
+        pages = _match("Facebook", targets) or settings.FACEBOOK_PAGE_IDS
         # 1) Apify (contourne l'App Review) — pages, groupes, posts publics
         if settings.APIFY_TOKEN and pages:
             items = await _apify_collect("Facebook", pages, limit)

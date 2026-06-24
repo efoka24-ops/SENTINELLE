@@ -27,7 +27,7 @@ class PressCollector(Collector):
     def is_live(self) -> bool:
         return True  # RSS public, toujours réel
 
-    async def collect(self, region: str, limit: int) -> list[RawItem]:
+    async def collect(self, region: str, limit: int, targets: list[str] | None = None) -> list[RawItem]:
         items: list[RawItem] = []
         per_feed = max(2, limit // max(1, len(FEEDS)))
         async with httpx.AsyncClient(
