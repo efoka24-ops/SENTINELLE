@@ -30,8 +30,8 @@ export function CarteView() {
   return (
     <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 358px', gap: 14, padding: 14, minHeight: 0 }}>
       {/* Cartogramme */}
-      <div style={{ background: colors.panel, border: `1px solid ${colors.border}`, borderRadius: 12, padding: 18, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ background: colors.panel, border: `1px solid ${colors.border}`, borderRadius: 12, padding: 18, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flex: 'none' }}>
           <div>
             <div style={{ fontSize: 16, fontWeight: 600 }}>Carte nationale des menaces</div>
             <div style={{ fontSize: 11, color: '#7a857b', marginTop: 2 }}>Cartogramme régional · pondéré par score de menace</div>
@@ -42,11 +42,11 @@ export function CarteView() {
             <span style={{ fontSize: 11, color: colors.muted, border: `1px solid ${colors.border}`, padding: '6px 12px', borderRadius: 7 }}>24 h</span>
           </div>
         </div>
-        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gridTemplateRows: 'repeat(6,1fr)', gap: 10, minHeight: 0 }}>
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gridTemplateRows: 'repeat(6,1fr)', gap: 10, minHeight: 0, overflow: 'hidden' }}>
           {regionsView.map((r) => (
-            <div key={r.name} style={{ gridColumn: r.gc, gridRow: r.gr, background: r.tileBg, border: `1px solid ${r.tileBorder}`, borderRadius: 11, padding: 13, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative' }}>
+            <div key={r.name} style={{ gridColumn: r.gc, gridRow: r.gr, background: r.tileBg, border: `1px solid ${r.tileBorder}`, borderRadius: 11, padding: 12, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', minHeight: 0, overflow: 'hidden' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{r.name}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: colors.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.name}</span>
                 {r.pulse && (
                   <span style={{ position: 'relative', width: 8, height: 8, display: 'block' }}>
                     <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: r.color }} />
@@ -54,9 +54,9 @@ export function CarteView() {
                   </span>
                 )}
               </div>
-              <div>
-                <div style={{ fontFamily: MONO, fontSize: 23, fontWeight: 600, color: r.color, lineHeight: 1 }}>{r.score}</div>
-                <div style={{ fontSize: 11, color: colors.muted, marginTop: 5 }}>{r.threat}</div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontFamily: MONO, fontSize: 21, fontWeight: 600, color: r.color, lineHeight: 1 }}>{r.score}</div>
+                <div style={{ fontSize: 11, color: colors.muted, marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.threat}</div>
               </div>
             </div>
           ))}
