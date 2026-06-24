@@ -252,3 +252,34 @@ export function useCreateUser() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
   });
 }
+
+export function useUpdateUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...patch }: { id: number; name?: string; role?: string; department?: string; password?: string }) =>
+      (await api.patch<ApiUser>(`/users/${id}`, patch)).data,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
+  });
+}
+
+export function useSetUserStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, active }: { id: number; active: boolean }) =>
+      (await api.patch<ApiUser>(`/users/${id}/status`, null, { params: { active } })).data,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
+  });
+}
+
+// ---- Alertes (actions opérationnelles) ----
+export function useUpdateAlert() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...patch }: { id: number; status?: string; assigned?: string }) =>
+      (await api.patch<ApiAlert>(`/alerts/${id}`, patch)).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['alerts'] });
+      qc.invalidateQueries({ queryKey: ['overview'] });
+    },
+  });
+}

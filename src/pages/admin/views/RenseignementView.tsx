@@ -52,8 +52,8 @@ export function RenseignementView() {
         )}
         {(flagged.data ?? []).map((f, i) => (
           <div key={f.author + i} style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr .6fr .6fr .9fr', gap: 10, padding: '10px 16px', borderBottom: '1px solid #eceee9', alignItems: 'center', fontSize: 12.5 }}>
-            <span style={{ fontFamily: MONO, fontSize: 11.5, color: colors.text2 }}>@{f.author}</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 7, color: colors.text4, fontSize: 11.5 }}><PlatformDot platform={f.platform} size={7} />{f.platform}</span>
+            <span style={{ fontFamily: MONO, fontSize: 11.5, color: colors.text2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>@{f.author}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 7, color: colors.text4, fontSize: 11.5, minWidth: 0, overflow: 'hidden' }}><PlatformDot platform={f.platform} size={7} /><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.platform}</span></span>
             <span style={{ fontFamily: MONO, color: colors.muted }}>{f.posts}</span>
             <span style={{ fontFamily: MONO, color: f.max_score >= 0.75 ? '#dc2626' : '#ea580c' }}>{f.max_score.toFixed(2)}</span>
             <Hov as="span" onClick={() => dossier(f.author)} base={{ fontSize: 10.5, fontWeight: 600, color: colors.greenDeep, background: colors.gold, borderRadius: 6, padding: '4px 9px', cursor: 'pointer', justifySelf: 'start' }} hover={{ background: colors.goldHover }}>↓ PDF</Hov>

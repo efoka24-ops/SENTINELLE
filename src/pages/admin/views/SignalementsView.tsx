@@ -4,6 +4,7 @@ import { statusCol } from '../../../data/mock';
 import { useCitizenReports } from '../../../api/hooks';
 
 const GRID = '170px 1.4fr 1fr 1fr 1fr 1fr';
+const ellip: React.CSSProperties = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 };
 
 export function SignalementsView() {
   const live = useCitizenReports();
@@ -45,9 +46,9 @@ export function SignalementsView() {
         </div>
         {rows.map((c) => (
           <div key={c.ref} style={{ display: 'grid', gridTemplateColumns: GRID, gap: 12, padding: '14px 18px', borderBottom: '1px solid #eceee9', alignItems: 'center', fontSize: 13 }}>
-            <span style={{ fontFamily: MONO, fontSize: 11.5, color: colors.muted }}>{c.ref}</span>
-            <span style={{ color: colors.text2 }}>{c.type}</span>
-            <span style={{ color: colors.text4 }}>{c.region}</span>
+            <span style={{ ...ellip, fontFamily: MONO, fontSize: 11.5, color: colors.muted }}>{c.ref}</span>
+            <span style={{ ...ellip, color: colors.text2 }}>{c.type}</span>
+            <span style={{ ...ellip, color: colors.text4 }}>{c.region}</span>
             <span>
               <span style={{ fontSize: 11, fontWeight: 600, color: c.scol, background: c.sbg, borderRadius: 5, padding: '3px 9px' }}>{c.status}</span>
             </span>

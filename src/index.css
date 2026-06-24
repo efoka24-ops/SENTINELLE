@@ -24,6 +24,16 @@ button {
   font-family: inherit;
 }
 
+/* Garde-fou anti-débordement du back-office :
+   les contrôles ne dépassent jamais leur cellule, et les longs jetons
+   (URLs, e-mails, hash) se coupent au lieu d'élargir la mise en page. */
+select,
+input,
+textarea,
+button {
+  max-width: 100%;
+}
+
 a {
   color: inherit;
 }

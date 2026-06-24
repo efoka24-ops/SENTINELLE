@@ -22,7 +22,7 @@ from ..config import settings
 from ..db import get_db
 from ..models import LoginCode, User
 from ..rbac import ROLE_LABELS, perms_for
-from ..schemas import LoginIn, LoginOut, RequestCodeIn, UserCreate, UserOut, VerifyCodeIn
+from ..schemas import LoginIn, LoginOut, RequestCodeIn, UserCreate, UserOut, UserUpdate, VerifyCodeIn
 from ..security import create_token, get_current_user, hash_password, require, verify_password
 
 router = APIRouter(tags=["auth"])
@@ -133,12 +133,41 @@ def create_user(body: UserCreate, db: Session = Depends(get_db),
     return user
 
 
+@router.patch("/users/{user_id}", response_model=UserOut)
+def update_user(user_id: int, body: UserUpdate, db: Session = Depends(get_db),
+                actor: User = Depends(require("users:manage"))):
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(404, "Utilisateur introuvable")
+    changed = []
+    if body.name is not None and body.name.strip():
+        user.name = body.name.strip()
+        changed.append("nom")
+    if body.department is not None:
+        user.department = body.department.strip()
+        changed.append("service")
+    if body.role is not None:
+        if body.role not in ROLE_LABELS:
+            raise HTTPException(400, "Rôle inconnu")
+        user.role = body.role
+        changed.append(f"rôle→{body.role}")
+    if body.password:
+        user.hashed_password = hash_password(body.password)
+        changed.append("mot de passe")
+    db.commit()
+    db.refresh(user)
+    log(db, "USER_UPDATED", f"{user.email} ({', '.join(changed) or 'aucun changement'})", actor)
+    return user
+
+
 @router.patch("/users/{user_id}/status", response_model=UserOut)
 def set_status(user_id: int, active: bool, db: Session = Depends(get_db),
                actor: User = Depends(require("users:manage"))):
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(404, "Utilisateur introuvable")
+    if user.id == actor.id and not active:
+        raise HTTPException(400, "Vous ne pouvez pas désactiver votre propre compte")
     user.is_active = active
     db.commit()
     db.refresh(user)

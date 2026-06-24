@@ -45,6 +45,13 @@ class UserCreate(BaseModel):
     department: str = ""
 
 
+class UserUpdate(BaseModel):
+    name: str | None = None
+    role: str | None = None
+    department: str | None = None
+    password: str | None = None
+
+
 class ScanIn(BaseModel):
     platforms: list[str]
     region: str = "National"

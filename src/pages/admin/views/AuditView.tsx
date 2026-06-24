@@ -4,6 +4,7 @@ import { Panel, StatCard, ViewHeader } from '../ui';
 import { useAuditLogs } from '../../../api/hooks';
 
 const GRID = '150px 1.1fr .8fr 1.3fr 1.4fr';
+const ellip: React.CSSProperties = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 };
 
 const ACTION_COL: Record<string, string> = {
   ALERT_CREATED: '#2563eb',
@@ -45,11 +46,11 @@ export function AuditView() {
         </div>
         {rows.map((a, i) => (
           <div key={i} style={{ display: 'grid', gridTemplateColumns: GRID, gap: 10, padding: '12px 16px', borderBottom: '1px solid #eceee9', alignItems: 'center', fontSize: 12.5 }}>
-            <span style={{ fontFamily: MONO, fontSize: 11, color: colors.muted }}>{a.time}</span>
-            <span style={{ color: a.user === 'Système' ? colors.muted3 : colors.text2 }}>{a.user}</span>
-            <span style={{ color: colors.muted2, fontSize: 11.5 }}>{a.role}</span>
-            <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, color: ACTION_COL[a.action] ?? colors.text4 }}>{a.action}</span>
-            <span style={{ fontFamily: MONO, fontSize: 11, color: colors.text4 }}>{a.target}</span>
+            <span style={{ ...ellip, fontFamily: MONO, fontSize: 11, color: colors.muted }}>{a.time}</span>
+            <span style={{ ...ellip, color: a.user === 'Système' ? colors.muted3 : colors.text2 }}>{a.user}</span>
+            <span style={{ ...ellip, color: colors.muted2, fontSize: 11.5 }}>{a.role}</span>
+            <span style={{ ...ellip, fontFamily: MONO, fontSize: 11, fontWeight: 600, color: ACTION_COL[a.action] ?? colors.text4 }}>{a.action}</span>
+            <span style={{ ...ellip, fontFamily: MONO, fontSize: 11, color: colors.text4 }}>{a.target}</span>
           </div>
         ))}
         <div style={{ padding: '12px 16px', fontSize: 11, color: colors.muted3, display: 'flex', alignItems: 'center', gap: 7 }}>
