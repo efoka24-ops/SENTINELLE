@@ -1,8 +1,16 @@
 import axios from 'axios';
 
-export const API_URL: string =
-  (import.meta.env.VITE_API_URL as string | undefined) ??
-  'http://localhost:8000/api/v1';
+// Base de l'API. Tolère une URL racine SANS le préfixe `/api/v1` :
+// `https://host` et `https://host/api/v1` donnent le même résultat.
+const RAW_API_URL: string =
+  (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000/api/v1';
+
+function normalizeApiUrl(u: string): string {
+  const trimmed = u.trim().replace(/\/+$/, '');
+  return /\/api\/v\d+$/.test(trimmed) ? trimmed : `${trimmed}/api/v1`;
+}
+
+export const API_URL: string = normalizeApiUrl(RAW_API_URL);
 
 export const api = axios.create({ baseURL: API_URL });
 
