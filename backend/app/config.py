@@ -20,6 +20,20 @@ def _load_dotenv() -> None:
 _load_dotenv()
 
 
+def _db_url() -> str:
+    """URL de base : SENTINELLE_DB_URL > DATABASE_URL (Railway) > SQLite local.
+    Normalise le schéma `postgres://` (Railway/Heroku) en `postgresql://`
+    requis par SQLAlchemy, et force le driver psycopg2."""
+    url = (
+        os.environ.get("SENTINELLE_DB_URL")
+        or os.environ.get("DATABASE_URL")
+        or f"sqlite:///{BASE_DIR / 'sentinelle.db'}"
+    )
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://"):]
+    return url
+
+
 class Settings:
     JWT_SECRET: str = os.environ.get("SENTINELLE_JWT_SECRET", "dev-secret-change-me")
     JWT_ALG: str = "HS256"
@@ -30,7 +44,7 @@ class Settings:
     #  - AUTH_DEV_MODE=false (PRODUCTION)    : le code est envoyé par e-mail, jamais renvoyé.
     AUTH_DEV_MODE: bool = os.environ.get("SENTINELLE_AUTH_DEV_MODE", "true").lower() in ("1", "true", "yes")
     LOGIN_CODE_TTL_MIN: int = 10
-    DB_URL: str = os.environ.get("SENTINELLE_DB_URL", f"sqlite:///{BASE_DIR / 'sentinelle.db'}")
+    DB_URL: str = _db_url()
     CORS_ORIGINS: list[str] = [
         o.strip()
         for o in os.environ.get(

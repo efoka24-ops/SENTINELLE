@@ -4,8 +4,15 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from .config import settings
 
-connect_args = {"check_same_thread": False} if settings.DB_URL.startswith("sqlite") else {}
-engine = create_engine(settings.DB_URL, connect_args=connect_args, future=True)
+_is_sqlite = settings.DB_URL.startswith("sqlite")
+connect_args = {"check_same_thread": False} if _is_sqlite else {}
+# pool_pre_ping : évite les connexions Postgres mortes (Railway peut couper les idle).
+engine = create_engine(
+    settings.DB_URL,
+    connect_args=connect_args,
+    pool_pre_ping=not _is_sqlite,
+    future=True,
+)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 
 
