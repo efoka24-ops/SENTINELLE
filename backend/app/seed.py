@@ -6,7 +6,7 @@ from .models import ThreatActor, User
 from .security import hash_password
 
 SEED_USERS = [
-    ("admin@sentinelle.cm", "Admin Système", "admin", "Direction SI", "admin123"),
+    ("emm.foka@gmail.com", "Admin Système", "admin", "Direction SI", "admin123"),
     ("directeur@sentinelle.cm", "Le Directeur", "director", "Direction", "directeur123"),
     ("chef@sentinelle.cm", "Chef d'équipe", "chief", "Veille sociale", "chef123"),
     ("analyste.sr@sentinelle.cm", "Analyste K.D", "analyst_sr", "Veille sociale", "analyste123"),
