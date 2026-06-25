@@ -8,7 +8,7 @@ import { colors, MONO } from '../theme';
 
 export function Login() {
   const nav = useNavigate();
-  const { login, loginDemo } = useAuth();
+  const { login } = useAuth();
   const reqMut = useRequestCode();
   const verMut = useVerifyCode();
 
@@ -42,11 +42,9 @@ export function Login() {
       const ex = e as { response?: { status?: number; data?: { detail?: string } } };
       if (ex.response?.status === 404) setErr(ex.response.data?.detail ?? 'Aucun compte pour cet e-mail.');
       else if (ex.response) setErr(ex.response.data?.detail ?? 'Erreur serveur.');
-      else {
-        // Backend injoignable → mode démonstration hors-ligne.
-        loginDemo();
-        nav('/admin/dashboard');
-      }
+      // Plus de bascule « démo » : la connexion exige le backend (accès strict
+      // par rôle). Sans backend joignable, on refuse l'accès.
+      else setErr('Service indisponible — réessayez dans un instant.');
     }
   };
 
