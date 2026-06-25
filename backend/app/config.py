@@ -39,6 +39,12 @@ class Settings:
         ).split(",")
         if o.strip()
     ]
+    # Autorise par défaut tout déploiement Vercel (*.vercel.app) sans config.
+    # Surchargeable via SENTINELLE_CORS_ORIGIN_REGEX.
+    CORS_ORIGIN_REGEX: str = os.environ.get(
+        "SENTINELLE_CORS_ORIGIN_REGEX",
+        r"https://.*\.vercel\.app",
+    )
 
     # Clés API des plateformes (présence => collecte réelle)
     TWITTER_BEARER_TOKEN: str = os.environ.get("TWITTER_BEARER_TOKEN", "")
