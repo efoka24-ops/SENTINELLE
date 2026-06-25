@@ -36,7 +36,7 @@ export function ScanLauncher({ onClose }: { onClose: () => void }) {
       setScanId(res.id);
     } catch (e) {
       const ex = e as { response?: { data?: { detail?: string } } };
-      setErr(ex.response?.data?.detail ?? "Backend injoignable. Démarrez l'API (port 8077).");
+      setErr(ex.response?.data?.detail ?? "Backend injoignable. Démarrez l'API (port 8000).");
     }
   };
 

@@ -12,10 +12,10 @@ preuve**, **rapports**, **carte/heatmap**, **audit immuable**, **WebSocket** tem
 cd backend
 uv venv --python 3.12
 uv pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8077
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-API : http://127.0.0.1:8077/api/v1 · Docs interactives : `/docs`
+API : http://127.0.0.1:8000/api/v1 · Docs interactives : `/docs`
 
 ## Comptes de démonstration (mot de passe = rôle + 123)
 

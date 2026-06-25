@@ -35,7 +35,7 @@ export function RapportsView() {
       });
       setResult(res);
     } catch {
-      setErr('Backend injoignable (port 8077).');
+      setErr('Backend injoignable (port 8000).');
     }
   };
 

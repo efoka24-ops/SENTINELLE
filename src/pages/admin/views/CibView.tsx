@@ -60,7 +60,7 @@ export function CibView() {
             Aucune grappe coordonnée pour l'instant. Lancez un scan multi-réseaux
             (bouton <span style={{ color: colors.gold }}>« Lancer un scan »</span>) pour alimenter
             le moteur — il détecte les messages quasi-identiques diffusés par plusieurs comptes.
-            <br /><span style={{ fontSize: 11, color: colors.muted3 }}>(API requise sur le port 8077.)</span>
+            <br /><span style={{ fontSize: 11, color: colors.muted3 }}>(API requise sur le port 8000.)</span>
           </div>
         </Panel>
       )}

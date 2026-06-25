@@ -51,7 +51,7 @@ export function UsersView() {
       setMsg('✓ Utilisateur créé.');
     } catch (e) {
       const ex = e as { response?: { data?: { detail?: string } } };
-      setMsg(ex.response?.data?.detail ?? 'Backend injoignable (port 8077).');
+      setMsg(ex.response?.data?.detail ?? 'Backend injoignable (port 8000).');
     }
   };
 
@@ -113,7 +113,7 @@ export function UsersView() {
             {users.isError && (
               <div style={{ padding: 16, fontSize: 12, color: colors.muted2 }}>
                 API injoignable. Démarrez le backend pour gérer les comptes :
-                <span style={{ fontFamily: MONO, color: colors.cyan }}> uvicorn app.main:app --port 8077</span>
+                <span style={{ fontFamily: MONO, color: colors.cyan }}> uvicorn app.main:app --port 8000</span>
               </div>
             )}
             {users.data?.map((u) => {
