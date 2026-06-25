@@ -47,6 +47,9 @@ def request_code(body: RequestCodeIn, db: Session = Depends(get_db)):
                      expires_at=datetime.utcnow() + timedelta(minutes=settings.LOGIN_CODE_TTL_MIN)))
     db.commit()
     log(db, "AUTH_CODE_REQUESTED", email, user)
+    # Code OTP également écrit dans les logs serveur (visible dans Railway) —
+    # pratique pour récupérer le code en production tant que le SMTP n'est pas branché.
+    print(f"[SENTINELLE][OTP] {email} -> code {code} (valable {settings.LOGIN_CODE_TTL_MIN} min)", flush=True)
 
     if settings.AUTH_DEV_MODE:
         # --- DÉVELOPPEMENT : envoi e-mail désactivé, code renvoyé pour les tests ---
