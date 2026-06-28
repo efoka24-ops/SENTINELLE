@@ -54,51 +54,6 @@ export function NotificationCenter() {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
   const displayNotifications = notifications.slice(0, 5);
 
-  const getNotificationColor = (type: string): string => {
-    switch (type) {
-      case 'ESCALATION':
-        return '#ef4444'; // Red
-      case 'SLA_WARNING':
-        return '#eab308'; // Yellow
-      case 'TRANSMISSION':
-        return '#10b981'; // Green
-      case 'DECISION_NEEDED':
-        return '#3b82f6'; // Blue
-      default:
-        return '#8b5cf6'; // Purple
-    }
-  };
-
-  const getNotificationIcon = (type: string): string => {
-    switch (type) {
-      case 'ESCALATION':
-        return '⬆️';
-      case 'SLA_WARNING':
-        return '⏰';
-      case 'TRANSMISSION':
-        return '✓';
-      case 'DECISION_NEEDED':
-        return '?';
-      default:
-        return '●';
-    }
-  };
-
-  const formatTime = (ts: string): string => {
-    const date = new Date(ts);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'À l\'instant';
-    if (diffMins < 60) return `Il y a ${diffMins}m`;
-    if (diffHours < 24) return `Il y a ${diffHours}h`;
-    if (diffDays < 7) return `Il y a ${diffDays}j`;
-    return date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
-  };
-
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
       <button

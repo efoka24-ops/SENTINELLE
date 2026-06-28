@@ -1,7 +1,6 @@
-import { useOutletContext } from 'react-router-dom';
 import { colors, MONO, meta, rgba, type Level } from '../../../theme';
 import { kpis as mockKpis } from '../../../data/mock';
-import { regions, alertCounts, type AdminOutletContext } from '../adminUtils';
+import { regions, alertCounts } from '../adminUtils';
 import { useOverview, useAlerts, useHeatmap } from '../../../api/hooks';
 
 const LEVELS: Level[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
