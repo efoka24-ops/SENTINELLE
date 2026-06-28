@@ -84,3 +84,54 @@ export interface RoleOption {
   key: string;
   label: string;
 }
+
+// Signalement (Citizen Reports) Types
+export interface ApiSignalement {
+  id: number;
+  ref: string;
+  type: string;
+  threat_category: string;
+  threat_subcategory?: string;
+  gravity: 'Faible' | 'Modéré' | 'Grave' | 'Critique';
+  region: string;
+  status: 'Nouveau' | 'Analyse' | 'Decision' | 'Escalade' | 'Transmitted';
+  assigned_to?: string;
+  assigned_analyst_id?: number;
+  created_at: string;
+  due_at: string;
+  notes?: string;
+  decision?: string;
+  decision_reason?: string;
+  decision_authority?: string;
+  escalation_reason?: string;
+  escalation_comment?: string;
+  escalated_by?: string;
+  escalated_at?: string;
+  geolocation?: string;
+  evidence_files?: string[];
+  related_links?: string[];
+}
+
+export interface SignalementHistory {
+  id: number;
+  signalement_id: number;
+  actor: string;
+  action: string;
+  timestamp: string;
+  notes?: string;
+}
+
+export interface SignalementDecision {
+  signalement_id: number;
+  threat_category: string;
+  threat_subcategory: string;
+  gravity: string;
+  notes: string;
+  decision: 'Validé' | 'Rejeté' | 'Escalade';
+  decision_reason: string;
+  decision_authority?: string;
+  escalation_comment?: string;
+  geolocation?: string;
+  evidence_files?: string[];
+  related_links?: string[];
+}

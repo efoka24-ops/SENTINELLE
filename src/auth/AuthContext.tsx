@@ -2,9 +2,10 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   type ReactNode,
 } from 'react';
-import { setToken } from '../api/client';
+import { setToken, getToken } from '../api/client';
 import type { ApiUser } from '../api/types';
 
 interface AuthUser {
@@ -55,6 +56,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     else localStorage.removeItem(USER_KEY);
     localStorage.setItem(PERM_KEY, JSON.stringify(p));
   };
+
+  // On mount, validate that stored token is still valid by checking localStorage consistency
+  // (Optional: in future, could call /auth/me to validate with backend)
+  useEffect(() => {
+    const storedToken = getToken();
+    const storedUser = localStorage.getItem(USER_KEY);
+    const storedPerms = localStorage.getItem(PERM_KEY);
+
+    // If token exists but user or perms are missing, clear auth state
+    if (storedToken && (!storedUser || !storedPerms)) {
+      setToken(null);
+      setUser(null);
+      setPerms([]);
+    }
+    // If user exists but token is missing, clear auth state
+    else if (storedUser && !storedToken) {
+      setUser(null);
+      setPerms([]);
+    }
+  }, []);
 
   const login = (token: string, apiUser: ApiUser, perms: string[]) => {
     setToken(token);

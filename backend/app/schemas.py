@@ -156,3 +156,38 @@ class CitizenIn(BaseModel):
     url: str | None = ""
     description: str | None = ""
     region: str | None = ""
+
+
+class SignalementOut(BaseModel):
+    id: int
+    reference: str
+    status: str
+    citizen_report_id: int | None
+    alert_id: int | None
+    assigned_to: int | None
+    escalated_to: int | None
+    category: str
+    gravity: str
+    decision: str | None
+    decision_reason: str
+    transmitted_to: str | None
+    notes: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SignalementEscalateIn(BaseModel):
+    reason: str
+
+
+class SignalementDecideIn(BaseModel):
+    decision: str  # Validé|Rejeté|Escalade
+    decision_reason: str
+    transmitted_to: str | None = None
+
+
+class SignalementReassignIn(BaseModel):
+    assigned_to_id: int

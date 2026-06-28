@@ -19,7 +19,7 @@ ROLE_LABELS = {
 ROLE_PERMS: dict[str, set[str]] = {
     "analyst_jr": {
         "view:dashboard", "view:carte", "view:alertes", "view:renseignement",
-        "view:signalements", "alerts:ack",
+        "view:signalements", "alerts:ack", "alerts:write",
     },
     "analyst_sr": {
         "view:dashboard", "view:carte", "view:collecte", "view:analyse",

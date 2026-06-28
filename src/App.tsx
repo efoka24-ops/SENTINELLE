@@ -1,6 +1,4 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import type { ReactNode } from 'react';
-import { useAuth } from './auth/AuthContext';
 import { PublicSite } from './pages/PublicSite';
 import { ReportFlow } from './pages/ReportFlow';
 import { Login } from './pages/Login';
@@ -17,12 +15,7 @@ import { EndpointsView } from './pages/admin/views/EndpointsView';
 import { RenseignementView } from './pages/admin/views/RenseignementView';
 import { SignalementsView } from './pages/admin/views/SignalementsView';
 import { UsersView } from './pages/admin/views/UsersView';
-
-function RequireAuth({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
-  return <>{children}</>;
-}
+import { ProtectedRoute } from './auth/ProtectedRoute';
 
 export default function App() {
   return (
@@ -33,24 +26,108 @@ export default function App() {
       <Route
         path="/admin"
         element={
-          <RequireAuth>
+          <ProtectedRoute>
             <AdminLayout />
-          </RequireAuth>
+          </ProtectedRoute>
         }
       >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardView />} />
-        <Route path="carte" element={<CarteView />} />
-        <Route path="collecte" element={<CollecteView />} />
-        <Route path="analyse" element={<AnalyseView />} />
-        <Route path="cib" element={<CibView />} />
-        <Route path="alertes" element={<AlertesView />} />
-        <Route path="rapports" element={<RapportsView />} />
-        <Route path="audit" element={<AuditView />} />
-        <Route path="endpoints" element={<EndpointsView />} />
-        <Route path="renseignement" element={<RenseignementView />} />
-        <Route path="signalements" element={<SignalementsView />} />
-        <Route path="users" element={<UsersView />} />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute requiredPermission="view:dashboard">
+              <DashboardView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="carte"
+          element={
+            <ProtectedRoute requiredPermission="view:carte">
+              <CarteView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="collecte"
+          element={
+            <ProtectedRoute requiredPermission="view:collecte">
+              <CollecteView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="analyse"
+          element={
+            <ProtectedRoute requiredPermission="view:analyse">
+              <AnalyseView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="cib"
+          element={
+            <ProtectedRoute requiredPermission="view:analyse">
+              <CibView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="alertes"
+          element={
+            <ProtectedRoute requiredPermission="view:alertes">
+              <AlertesView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="rapports"
+          element={
+            <ProtectedRoute requiredPermission="view:rapports">
+              <RapportsView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="audit"
+          element={
+            <ProtectedRoute requiredPermission="audit:read">
+              <AuditView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="endpoints"
+          element={
+            <ProtectedRoute requiredPermission="view:endpoints">
+              <EndpointsView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="renseignement"
+          element={
+            <ProtectedRoute requiredPermission="view:renseignement">
+              <RenseignementView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="signalements"
+          element={
+            <ProtectedRoute requiredPermission="view:signalements">
+              <SignalementsView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="users"
+          element={
+            <ProtectedRoute requiredPermission="users:manage">
+              <UsersView />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

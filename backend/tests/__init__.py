@@ -1,0 +1,1 @@
+"""SENTINELLE test suite."""

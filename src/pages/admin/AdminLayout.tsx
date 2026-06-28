@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SentinelleLogo } from '../../components/SentinelleLogo';
+import { PermissionBadge } from '../../components/PermissionBadge';
 import { Hov } from '../../lib/Hoverable';
 import { useAuth } from '../../auth/AuthContext';
 import {
@@ -34,6 +35,7 @@ import {
 import { decorate, type DecoratedFeed } from './adminUtils';
 import { FicheDrawer } from './FicheDrawer';
 import { ScanLauncher } from './ScanLauncher';
+import { NotificationCenter } from './components/NotificationCenter';
 
 type Group = 'SUPERVISION' | 'VEILLE' | 'RENSEIGNEMENT' | 'OPÉRATIONS' | 'PRODUCTION & GOUVERNANCE';
 
@@ -210,6 +212,10 @@ export function AdminLayout() {
               <span style={{ fontSize: 10.5, letterSpacing: '.06em', color: colors.muted }}>NIVEAU</span>
               <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: '.03em', color: nat.c }}>{nat.l.toUpperCase()}</span>
             </div>
+            {/* Notification Center */}
+            <NotificationCenter />
+            {/* Permission Badge */}
+            <PermissionBadge />
             <div style={{ textAlign: 'right', lineHeight: 1.2 }}>
               <div style={{ fontFamily: MONO, fontSize: 15, fontWeight: 500, letterSpacing: '.03em', color: colors.text }}>{formatClock(now)}</div>
               <div style={{ fontSize: 9.5, color: colors.muted, textTransform: 'capitalize' }}>{now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</div>

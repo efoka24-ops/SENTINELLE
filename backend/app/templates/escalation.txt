@@ -1,0 +1,26 @@
+ESCALADE DE SIGNALEMENT
+========================
+
+Signalement référence : #{reference}
+Escaladé vers : {escalated_role}
+Par : {analyst_name}
+Date/heure : {timestamp}
+
+DÉTAILS
+-------
+Catégorie : {category}
+Gravité : {gravity}
+Raison de l'escalade : {reason}
+
+STATUT SLA
+----------
+Créé le : {created_at}
+SLA restant : {sla_remaining}
+Deadline : {sla_deadline}
+
+NOTES
+-----
+{notes}
+
+---
+SENTINELLE — Système de surveillance des menaces

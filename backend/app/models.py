@@ -108,7 +108,7 @@ class Notification(Base):
     __tablename__ = "notifications"
     id: Mapped[int] = mapped_column(primary_key=True)
     ts: Mapped[datetime] = mapped_column(DateTime, default=now)
-    channel: Mapped[str] = mapped_column(String(20), default="email")  # email|sms|whatsapp
+    channel: Mapped[str] = mapped_column(String(20), default="email")  # email|sms|whatsapp|internal
     target: Mapped[str] = mapped_column(String(200), default="")
     level: Mapped[str] = mapped_column(String(10), default="HIGH")
     platform: Mapped[str] = mapped_column(String(30), default="")
@@ -117,9 +117,12 @@ class Notification(Base):
     evidence_text: Mapped[str] = mapped_column(Text, default="")
     evidence_time: Mapped[str] = mapped_column(String(40), default="")
     threat_type: Mapped[str] = mapped_column(String(40), default="")
+    notification_type: Mapped[str] = mapped_column(String(40), default="ALERT")  # ALERT|ESCALATION|SLA_WARNING|TRANSMISSION|DECISION_NEEDED
     message: Mapped[str] = mapped_column(Text, default="")
     sent_by: Mapped[str] = mapped_column(String(120), default="")
-    status: Mapped[str] = mapped_column(String(20), default="sent")
+    status: Mapped[str] = mapped_column(String(20), default="sent")  # sent|error|read
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False)
+    signalement_ref: Mapped[str | None] = mapped_column(String(40), nullable=True, index=True)  # Link to signalement
 
 
 class Report(Base):
@@ -144,6 +147,25 @@ class LoginCode(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime)
     used: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+
+
+class Signalement(Base):
+    __tablename__ = "signalements"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reference: Mapped[str] = mapped_column(String(40), unique=True, index=True)
+    status: Mapped[str] = mapped_column(String(20), default="Nouveau")  # Nouveau|Analyse|Decision|Escalade|Transmitted
+    citizen_report_id: Mapped[int | None] = mapped_column(ForeignKey("citizen_reports.id"), nullable=True)
+    alert_id: Mapped[int | None] = mapped_column(ForeignKey("alerts.id"), nullable=True)
+    assigned_to: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    escalated_to: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    category: Mapped[str] = mapped_column(String(40), default="")
+    gravity: Mapped[str] = mapped_column(String(20), default="Modéré")  # Faible|Modéré|Grave|Critique
+    decision: Mapped[str | None] = mapped_column(String(20), nullable=True)  # Validé|Rejeté|Escalade
+    decision_reason: Mapped[str] = mapped_column(Text, default="")
+    transmitted_to: Mapped[str | None] = mapped_column(String(100), nullable=True)  # ANTIC|Armée|Parquet
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=now, onupdate=now)
 
 
 class AuditLog(Base):

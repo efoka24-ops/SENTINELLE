@@ -10,6 +10,9 @@ import type {
   PlatformInfo,
   RoleOption,
   ScanJob,
+  ApiSignalement,
+  SignalementHistory,
+  SignalementDecision,
 } from './types';
 
 // ---- Auth ----
@@ -280,6 +283,104 @@ export function useUpdateAlert() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['alerts'] });
       qc.invalidateQueries({ queryKey: ['overview'] });
+    },
+  });
+}
+
+// ---- Signalements (Citizen Reports) ----
+export function useSignalements(filter?: Record<string, string | number | undefined>, limit = 100, enabled = true) {
+  return useQuery({
+    queryKey: ['signalements', filter ?? {}],
+    queryFn: async () => (await api.get<ApiSignalement[]>('/signalements', { params: { limit, ...filter } })).data,
+    enabled,
+    refetchInterval: 5000,
+  });
+}
+
+export function useSignalement(id: number | null) {
+  return useQuery({
+    queryKey: ['signalement', id],
+    queryFn: async () => (await api.get<ApiSignalement>(`/signalements/${id}`)).data,
+    enabled: id != null,
+  });
+}
+
+export function useSignalementHistory(signalementId: number | null) {
+  return useQuery({
+    queryKey: ['signalement-history', signalementId],
+    queryFn: async () => (await api.get<SignalementHistory[]>(`/signalements/${signalementId}/history`)).data,
+    enabled: signalementId != null,
+  });
+}
+
+export function useDecideSignalement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (vars: SignalementDecision) =>
+      (await api.post<ApiSignalement>('/signalements/decide', vars)).data,
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['signalements'] });
+      qc.invalidateQueries({ queryKey: ['signalement', data.id] });
+    },
+  });
+}
+
+export function useEscalateSignalement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, escalation_comment }: { id: number; escalation_comment: string }) =>
+      (await api.patch<ApiSignalement>(`/signalements/${id}/escalate`, { escalation_comment })).data,
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['signalements'] });
+      qc.invalidateQueries({ queryKey: ['signalement', data.id] });
+    },
+  });
+}
+
+export function useReassignSignalement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, assigned_analyst_id }: { id: number; assigned_analyst_id: number }) =>
+      (await api.patch<ApiSignalement>(`/signalements/${id}/assign`, { assigned_analyst_id })).data,
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['signalements'] });
+      qc.invalidateQueries({ queryKey: ['signalement', data.id] });
+    },
+  });
+}
+
+// ---- Notifications ----
+export interface Notification {
+  id: number;
+  ts: string;
+  channel: string;
+  target: string;
+  level: string;
+  platform: string;
+  author: string;
+  threat_type: string;
+  notification_type: string;
+  message: string;
+  status: string;
+  is_read: boolean;
+  signalement_ref: string | null;
+}
+
+export function useNotifications(limit = 50) {
+  return useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => (await api.get<Notification[]>('/notifications', { params: { limit } })).data,
+    refetchInterval: 5000, // Poll every 5 seconds
+  });
+}
+
+export function useMarkNotificationRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (notifId: number) =>
+      (await api.patch(`/notifications/${notifId}/read`)).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 }

@@ -41,7 +41,10 @@ export function AlertesView() {
       }))
     : alertsList.map((a) => ({ ...a, level: a.level as Level }));
 
-  const canAct = hasPerm('alerts:ack') || hasPerm('alerts:write');
+  // Permission checks for different roles
+  const canAcknowledge = hasPerm('alerts:ack') || hasPerm('alerts:write');
+  const canEscalate = hasPerm('alerts:write');
+
   const counts = LEVELS.map((lvl) => {
     const m = meta(lvl);
     return { level: lvl, color: m.c, label: m.l, n: rows.filter((r) => r.level === lvl).length };
@@ -56,6 +59,17 @@ export function AlertesView() {
     if (r.id == null) return;
     setBusy(r.id);
     try { await updateAlert.mutateAsync({ id: r.id, assigned: user?.name ?? 'moi' }); } finally { setBusy(null); }
+  };
+
+  // Helper to get tooltip for disabled actions
+  const getDisabledTooltip = (action: string) => {
+    if (action === 'acknowledge') {
+      return 'Requires alerts:ack or alerts:write permission';
+    }
+    if (action === 'escalate') {
+      return 'Requires alerts:write permission';
+    }
+    return 'Insufficient permissions';
   };
 
   return (
@@ -101,18 +115,25 @@ export function AlertesView() {
               </div>
               <span style={{ ...ellip, display: 'flex', alignItems: 'center', gap: 7, color: colors.text4, fontSize: 11.5 }}><PlatformDot platform={a.platform} size={7} />{a.platform}</span>
               <span style={{ fontFamily: MONO, color: m.c }}>{a.score.toFixed(2)}</span>
-              {canAct && a.id != null ? (
+              {canAcknowledge && a.id != null ? (
                 <select value={a.status} onChange={(e) => setStatus(a, e.target.value)} disabled={rowBusy}
-                  style={{ width: '100%', minWidth: 0, fontSize: 11, fontWeight: 600, color: sc, background: '#f7f8f6', border: `1px solid ${colors.border}`, borderRadius: 6, padding: '4px 6px', outline: 'none', cursor: 'pointer' }}>
+                  title={!canAcknowledge ? getDisabledTooltip('acknowledge') : undefined}
+                  style={{ width: '100%', minWidth: 0, fontSize: 11, fontWeight: 600, color: sc, background: '#f7f8f6', border: `1px solid ${colors.border}`, borderRadius: 6, padding: '4px 6px', outline: 'none', cursor: 'pointer', opacity: rowBusy ? 0.6 : 1 }}>
                   {STATUSES.map((s) => <option key={s} value={s} style={{ color: colors.text }}>{s}</option>)}
                 </select>
               ) : (
-                <span style={{ fontSize: 11, fontWeight: 600, color: sc }}>{a.status}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: sc, opacity: 0.6 }} title={getDisabledTooltip('acknowledge')}>
+                  {a.status}
+                </span>
               )}
               <span style={{ ...ellip, color: colors.muted, fontSize: 11.5 }}>{a.assigned}</span>
-              {canAct && a.id != null ? (
+              {canEscalate && a.id != null ? (
                 <Hov as="span" onClick={() => assignToMe(a)} base={{ fontSize: 10, fontWeight: 600, color: colors.greenDeep, background: colors.greenLight, borderRadius: 6, padding: '4px 7px', cursor: 'pointer', textAlign: 'center', whiteSpace: 'nowrap' }} hover={{ background: colors.green, color: '#fff' }}>M'assigner</Hov>
-              ) : <span />}
+              ) : (
+                <span style={{ fontSize: 10, fontWeight: 600, color: colors.muted3, opacity: 0.5, cursor: 'not-allowed' }} title={getDisabledTooltip('escalate')}>
+                  M'assigner
+                </span>
+              )}
             </div>
           );
         })}

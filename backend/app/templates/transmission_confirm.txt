@@ -1,0 +1,22 @@
+CONFIRMATION DE TRANSMISSION
+=============================
+
+Signalement référence : #{reference}
+Transmis à : {authority}
+Date/heure : {timestamp}
+
+DÉTAILS DE LA TRANSMISSION
+---------------------------
+Catégorie : {category}
+Gravité : {gravity}
+Décision : {decision}
+Raison : {decision_reason}
+
+PROCHAINES ÉTAPES
+------------------
+Ce signalement a été transmis aux autorités compétentes.
+Vous recevrez des mises à jour concernant le traitement de ce dossier via ce système.
+
+---
+SENTINELLE — Système de surveillance des menaces
+Document confidentiel — usage autorités

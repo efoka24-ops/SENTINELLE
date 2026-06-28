@@ -23,6 +23,13 @@ backend/.env
 *.db
 sentinelle.db
 
+# Test coverage
+coverage_html/
+.coverage
+coverage.xml
+htmlcov/
+.coverage.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

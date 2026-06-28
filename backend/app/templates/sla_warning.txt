@@ -1,0 +1,23 @@
+ALERTE SLA - ACTION REQUISE
+============================
+
+⚠️ SIGNALEMENT EN RISQUE SLA
+
+Signalement référence : #{reference}
+Temps restant : {time_remaining}
+Deadline : {sla_deadline}
+
+DÉTAILS
+-------
+Catégorie : {category}
+Gravité : {gravity}
+Status : {status}
+Assigné à : {assigned_to}
+
+ACTION IMMÉDIATE REQUISE
+------------------------
+Le délai de 24h approche de son expiration.
+Veuillez finaliser votre analyse ou escalader ce signalement immédiatement.
+
+---
+SENTINELLE — Système de surveillance des menaces
